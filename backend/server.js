@@ -1,19 +1,39 @@
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Routes
 const todoRoutes = require("./routes/todoRoutes");
 app.use("/api/todos", todoRoutes);
 
-mongoose.connect(
-  "mongodb://Nithyashree06:Saibaba06@ac-rgcg0bv-shard-00-00.spypgov.mongodb.net:27017,ac-rgcg0bv-shard-00-01.spypgov.mongodb.net:27017,ac-rgcg0bv-shard-00-02.spypgov.mongodb.net:27017/todoDB?ssl=true&replicaSet=atlas-c36hxu-shard-0&authSource=admin&appName=Cluster0"
-)
-.then(() => console.log("MongoDB Connected ✅"))
-.catch(err => console.log("DB ERROR ❌:", err));
-app.listen(5000, () => console.log("Server running on 5000"));
+// ✅ MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch(err => console.log("DB ERROR ❌:", err));
+
+// ✅ Serve frontend (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, "frontend")));
+
+// ✅ Root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
+
+// ✅ FIXED Catch-all (no more error)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
+
+// ✅ Port
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server running on ${PORT} 🚀`));
