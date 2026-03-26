@@ -1,5 +1,5 @@
 
-const API = "http://localhost:5000/api/todos";
+fetch("https://todo-fullstack-vnw3.onrender.com/api/todos")
 
 // Load todos
 async function getTodos() {
