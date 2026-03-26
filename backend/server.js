@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Catch-all (IMPORTANT)
+// Catch-all
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });

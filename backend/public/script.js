@@ -1,57 +1,75 @@
 
-fetch("https://todo-fullstack-vnw3.onrender.com/api/todos")
+const API = window.location.origin;
 
-// Load todos
+const input = document.getElementById("taskInput");
+const addBtn = document.getElementById("addBtn");
+const list = document.getElementById("taskList");
+
+// 🔹 Load all todos when page loads
+window.onload = getTodos;
+
+// ✅ GET TODOS
 async function getTodos() {
-  const res = await fetch(API);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API}/api/todos`);
+    const data = await res.json();
 
-  const list = document.getElementById("todoList");
-  list.innerHTML = "";
+    list.innerHTML = "";
 
-  data.forEach(todo => {
-    const li = document.createElement("li");
+    data.forEach(todo => {
+      const li = document.createElement("li");
+      li.textContent = todo.text;
 
-    li.innerHTML = `
-      ${todo.text}
-      <button onclick="deleteTodo('${todo._id}')">❌</button>
-    `;
+      // Delete button
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.onclick = () => deleteTodo(todo._id);
 
-    list.appendChild(li);
-  });
+      li.appendChild(delBtn);
+      list.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("Error fetching todos:", err);
+  }
 }
 
-// Add todo
-async function addTodo() {
-  const input = document.getElementById("todoInput");
+// ✅ ADD TODO
+addBtn.addEventListener("click", async () => {
+  const task = input.value.trim();
 
-  if (input.value.trim() === "") {
-    alert("Enter something!");
+  if (!task) {
+    alert("Enter a task");
     return;
   }
 
-  await fetch(API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      text: input.value
-    })
-  });
+  try {
+    await fetch(`${API}/api/todos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text: task })
+    });
 
-  input.value = "";
-  getTodos();
-}
+    input.value = "";
+    getTodos(); // refresh list
 
-// Delete todo
+  } catch (err) {
+    console.error("Error adding todo:", err);
+  }
+});
+
+// ✅ DELETE TODO
 async function deleteTodo(id) {
-  await fetch(`${API}/${id}`, {
-    method: "DELETE"
-  });
+  try {
+    await fetch(`${API}/api/todos/${id}`, {
+      method: "DELETE"
+    });
 
-  getTodos();
+    getTodos(); // refresh list
+
+  } catch (err) {
+    console.error("Error deleting todo:", err);
+  }
 }
-
-// Initial load
-getTodos();
