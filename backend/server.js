@@ -15,25 +15,24 @@ app.use(express.json());
 const todoRoutes = require("./routes/todoRoutes");
 app.use("/api/todos", todoRoutes);
 
-// ✅ MongoDB Connection
+// MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected ✅"))
   .catch(err => console.log("DB ERROR ❌:", err));
 
-// ✅ Serve frontend (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, "frontend")));
+// Serve frontend
+app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Root route
+// Root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ✅ FIXED Catch-all (no more error)
+// Catch-all (IMPORTANT)
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ✅ Port
+// Port
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => console.log(`Server running on ${PORT} 🚀`));
